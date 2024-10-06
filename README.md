@@ -10,3 +10,5 @@ To build for macOS (amd64):
 `make OS_ARCH=darwin/amd64`
 
 Find your build for your system in the `build` directory, run the application.
+
+Feel free to just download the latest release (Windows only currently) and use it - https://github.com/Carmen-Shannon/auto-clicker/releases
