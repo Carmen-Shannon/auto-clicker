@@ -61,7 +61,7 @@ func HandleKeyPressEvent(ctx context.Context, callback func()) {
 	}()
 }
 
-//HandleStartAutoClicker starts the auto clicker and manages the stopChannel
+// HandleStartAutoClicker starts the auto clicker and manages the stopChannel
 func HandleStartAutoClicker(inputData dto.DelayValuesDto, stopChannel *chan struct{}, button *widget.Button) {
 	if isChannelClosed(*stopChannel) {
 		*stopChannel = make(chan struct{})
@@ -85,16 +85,26 @@ func startAutoClicker(delay int, extraDelay int, clicks int, stopChan chan struc
 			case <-ticker.C:
 				if extraDelay > 0 {
 					randomDelay := rand.Intn(extraDelay)
-					ticker.Stop() // Stop the ticker before sleep
-					time.Sleep(time.Duration(randomDelay))
-					ticker = time.NewTicker(time.Duration(delay))
+					timer := time.NewTimer(time.Duration(randomDelay))
+					select {
+					case <-timer.C:
+					case <-stopChan:
+						timer.Stop()
+						return
+					}
 				}
-				robotgo.Click("left")
-				clickCount++
-				if clicks > 0 && clickCount >= clicks {
-					HandleStartStopButton(button)
-					close(stopChan)
+
+				select {
+				case <-stopChan:
 					return
+				default:
+					robotgo.Click("left")
+					clickCount++
+					if clicks > 0 && clickCount >= clicks {
+						HandleStartStopButton(button)
+						close(stopChan)
+						return
+					}
 				}
 			case <-stopChan:
 				return

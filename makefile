@@ -24,7 +24,7 @@ build:
 $(OS_ARCH):
 ifeq ($(OS),Windows_NT)
 	if not exist "$(OUTPUT_DIR)\$(word 1, $(subst /, ,$@))\$(word 2, $(subst /, ,$@))" mkdir "$(OUTPUT_DIR)\$(word 1, $(subst /, ,$@))\$(word 2, $(subst /, ,$@))"
-	set "GOOS=$(word 1, $(subst /, ,$@))" && set "GOARCH=$(word 2, $(subst /, ,$@))" && $(GO_BUILD) $(BUILD_FLAGS) -o "$(OUTPUT_DIR)\$(word 1, $(subst /, ,$@))\$(word 2, $(subst /, ,$@))\$(APP_NAME).exe"
+	set "GOOS=$(word 1, $(subst /, ,$@))" && set "GOARCH=$(word 2, $(subst /, ,$@))" && $(GO_BUILD) -ldflags "-H=windowsgui -s -w" -o "$(OUTPUT_DIR)\$(word 1, $(subst /, ,$@))\$(word 2, $(subst /, ,$@))\$(APP_NAME).exe"
 else
 	@if [ ! -d "$(OUTPUT_DIR)/$(word 1, $(subst /, ,$@))/$(word 2, $(subst /, ,$@))" ]; then mkdir -p "$(OUTPUT_DIR)/$(word 1, $(subst /, ,$@))/$(word 2, $(subst /, ,$@))"; fi
 	GOOS=$(word 1, $(subst /, ,$@)) GOARCH=$(word 2, $(subst /, ,$@)) $(GO_BUILD) $(BUILD_FLAGS) -o "$(OUTPUT_DIR)/$(word 1, $(subst /, ,$@))/$(word 2, $(subst /, ,$@))/$(APP_NAME)"
