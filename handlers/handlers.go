@@ -74,43 +74,43 @@ func HandleStartAutoClicker(inputData dto.DelayValuesDto, stopChannel *chan stru
 
 // startAutoClicker starts the auto clicker with a time.NewTicker using the given delay and extraDelay
 func startAutoClicker(delay int, extraDelay int, clicks int, stopChan chan struct{}, button *widget.Button) {
-	go func() {
-		ticker := time.NewTicker(time.Duration(delay))
-		defer ticker.Stop()
+    go func() {
+        ticker := time.NewTicker(time.Duration(delay))
+        defer ticker.Stop()
 
-		clickCount := 0
+        clickCount := 0
 
-		for {
-			select {
-			case <-ticker.C:
-				if extraDelay > 0 {
-					randomDelay := rand.Intn(extraDelay)
-					timer := time.NewTimer(time.Duration(randomDelay))
-					select {
-					case <-timer.C:
-					case <-stopChan:
-						timer.Stop()
-						return
-					}
-				}
+        for {
+            select {
+            case <-ticker.C:
+                if extraDelay > 0 {
+                    randomDelay := rand.Intn(extraDelay)
+                    timer := time.NewTimer(time.Duration(randomDelay))
+                    select {
+                    case <-timer.C:
+                    case <-stopChan:
+                        timer.Stop()
+                        return
+                    }
+                }
 
-				select {
-				case <-stopChan:
-					return
-				default:
-					robotgo.Click("left")
-					clickCount++
-					if clicks > 0 && clickCount >= clicks {
-						HandleStartStopButton(button)
-						close(stopChan)
-						return
-					}
-				}
-			case <-stopChan:
-				return
-			}
-		}
-	}()
+                select {
+                case <-stopChan:
+                    return
+                default:
+                    robotgo.Click("left")
+                    clickCount++
+                    if clicks > 0 && clickCount >= clicks {
+                        HandleStartStopButton(button)
+                        close(stopChan)
+                        return
+                    }
+                }
+            case <-stopChan:
+                return
+            }
+        }
+    }()
 }
 
 func isChannelClosed(ch <-chan struct{}) bool {
